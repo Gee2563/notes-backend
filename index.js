@@ -1,13 +1,5 @@
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 4000;
-const cors = require('cors')
-
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`)
-});
-
 
 let notes = [
   {
@@ -27,6 +19,8 @@ let notes = [
   }
 ]
 
+app.use(express.static('dist'))
+
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
@@ -35,10 +29,12 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+const cors = require('cors')
+
+app.use(cors())
+
 app.use(express.json())
 app.use(requestLogger)
-app.use(cors())
-app.use(express.static('build') )
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
@@ -99,3 +95,7 @@ app.delete('/api/notes/:id', (request, response) => {
 
 app.use(unknownEndpoint)
 
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
